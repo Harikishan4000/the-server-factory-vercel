@@ -1,0 +1,86 @@
+import type { Metadata } from 'next';
+import './globals.css';
+import { Navbar } from '@/components/layout/Navbar';
+import { Footer } from '@/components/layout/Footer';
+import { CartProvider } from '@/components/cart/CartProvider';
+import { ThemeProvider } from '@/components/theme/ThemeProvider';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'ServerFactory — Enterprise Servers, Workstations & Components',
+    template: '%s | ServerFactory',
+  },
+  description:
+    'Buy Dell, HP, Lenovo & NVIDIA enterprise servers, GPU workstations, storage and components online. Configure your build, fast delivery across India.',
+  keywords: [
+    'servers', 'buy servers India', 'dedicated servers', 'GPU servers', 'rack servers',
+    'Dell PowerEdge', 'HP ProLiant', 'Lenovo ThinkSystem', 'workstations', 'refurbished servers',
+    'server components', 'Xeon processors', 'enterprise storage', 'server India',
+  ],
+  openGraph: {
+    type: 'website',
+    url: siteUrl,
+    siteName: 'ServerFactory',
+    title: 'ServerFactory — Enterprise Servers & Workstations',
+    description: 'Configure and buy enterprise servers, GPU workstations and components online.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ServerFactory — Enterprise Servers & Workstations',
+    description: 'Configure and buy enterprise servers, GPU workstations and components online.',
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: siteUrl },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <head>
+        {/* Runtime font loading — avoids build-time Google Fonts fetch errors */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('serverfactory.theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}`,
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'ServerFactory',
+              url: siteUrl,
+              logo: `${siteUrl}/logo.svg`,
+              sameAs: [],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                contactType: 'Sales',
+                email: 'sales@serverfactory.com',
+                areaServed: 'IN',
+              },
+            }),
+          }}
+        />
+      </head>
+      <body className="font-sans">
+        <ThemeProvider>
+          <CartProvider>
+            <Navbar />
+            <main className="min-h-[70vh]">{children}</main>
+            <Footer />
+          </CartProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}

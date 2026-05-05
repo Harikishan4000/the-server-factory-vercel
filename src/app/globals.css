@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #F59E0B;
+  --brand-dark: #D97706;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --text: #0B1220;
+  --text-muted: #6b7280;
+}
+
+.dark {
+  --bg: #0a0f1a;
+  --surface: #111827;
+  --border: #1f2937;
+  --text: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+html, body { min-height: 100vh; }
+body {
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.hero-backdrop {
+  background-image:
+    radial-gradient(1200px 500px at 10% -20%, rgba(113, 188, 10, 0.15), transparent 60%),
+    radial-gradient(800px 400px at 110% 10%, rgba(113, 188, 10, 0.08), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f3fbe6 100%);
+}
+.dark .hero-backdrop {
+  background-image:
+    radial-gradient(1200px 500px at 10% -20%, rgba(113, 188, 10, 0.22), transparent 60%),
+    radial-gradient(800px 400px at 110% 10%, rgba(113, 188, 10, 0.12), transparent 60%),
+    linear-gradient(180deg, #0a0f1a 0%, #0a140a 100%);
+}
+
+.btn-brand {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 font-semibold text-white shadow-brand transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:opacity-60;
+}
+.dark .btn-brand {
+  @apply focus:ring-offset-gray-900;
+}
+
+.btn-outline {
+  @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand bg-transparent px-6 py-3 font-semibold text-brand transition hover:bg-brand hover:text-white;
+}
+
+.card {
+  @apply rounded-2xl border border-gray-200 bg-white shadow-soft;
+}
+.dark .card {
+  @apply border-gray-800 bg-gray-900;
+}
+
+.nav-dropdown {
+  @apply invisible absolute left-0 top-full z-40 mt-1 min-w-[220px] rounded-xl border border-gray-100 bg-white p-2 opacity-0 shadow-xl transition-all duration-200;
+}
+.nav-item:hover .nav-dropdown,
+.nav-item:focus-within .nav-dropdown {
+  @apply visible opacity-100;
+}
+.dark .nav-dropdown { @apply border-gray-800 bg-gray-900; }
+
+/* Loading shimmer skeletons */
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 0%, #e4e4e4 50%, #f0f0f0 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 1.8s infinite linear;
+  border-radius: 0.5rem;
+}
+.dark .shimmer {
+  background: linear-gradient(90deg, #1f2937 0%, #374151 50%, #1f2937 100%);
+  background-size: 1000px 100%;
+}
+
+/* Spinner */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(113, 188, 10, 0.2);
+  border-top-color: #71BC0A;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.spinner-lg {
+  width: 48px; height: 48px; border-width: 4px;
+}
+
+/* Dark-mode form input defaults */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="tel"],
+.dark input[type="number"],
+.dark input[type="search"],
+.dark textarea,
+.dark select {
+  background-color: #111827 !important;
+  border-color: #1f2937;
+  color: #e5e7eb;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6b7280;
+}
+
+/* Mobile drawer helpers */
+.drawer-backdrop {
+  @apply fixed inset-0 z-40 bg-black/50 backdrop-blur-sm;
+}
