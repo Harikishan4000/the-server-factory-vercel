@@ -29,6 +29,7 @@ export function Footer() {
   <Link href="/contact" className="flex items-center gap-2 hover:text-brand transition-colors">
     <MapPin className="h-4 w-4 text-brand" /> Bengaluru, Karnataka, India
   </Link>
+ </div>
 </div>
 
           <div>
