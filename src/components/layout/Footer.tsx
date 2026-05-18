@@ -18,11 +18,16 @@ export function Footer() {
               and data-center components from Dell, HP, Lenovo, NVIDIA and more.
             </p>
             <div className="mt-6 space-y-2 text-sm text-ink-muted dark:text-gray-400">
-              <div className="flex items-center gap-2"><Mail className="h-4 w-4 text-brand" /> sales@serverfactory.com</div>
-              <div className="flex items-center gap-2"><Phone className="h-4 w-4 text-brand" /> +91 80 4000 0000</div>
-              <div className="flex items-center gap-2"><MapPin className="h-4 w-4 text-brand" /> Bengaluru, Karnataka, India</div>
-            </div>
-          </div>
+  <a href="mailto:sales@serverfactory.com" className="flex items-center gap-2 hover:text-brand transition-colors">
+    <Mail className="h-4 w-4 text-brand" /> sales@serverfactory.com
+  </a>
+  <a href="tel:+918040000000" className="flex items-center gap-2 hover:text-brand transition-colors">
+    <Phone className="h-4 w-4 text-brand" /> +91 80 4000 0000
+  </a>
+  <Link href="/contact" className="flex items-center gap-2 hover:text-brand transition-colors">
+    <MapPin className="h-4 w-4 text-brand" /> Bengaluru, Karnataka, India
+  </Link>
+</div>
 
           <div>
             <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-ink dark:text-gray-100">Shop</h4>
