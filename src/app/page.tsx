@@ -17,22 +17,23 @@ export default async function HomePage() {
     <div>
       {blocks.map((block) => {
         const data = block.data as any;
-        switch (block.type) {
-          case 'HERO_CAROUSEL':
-            return <HeroCarousel key={block.id} slides={data.slides ?? []} />;
-          case 'PROMO_BANNER':
-            return <PromoBanner key={block.id} text={data.text} link={data.link} bgColor={data.bgColor} />;
-          case 'FEATURED_PRODUCTS':
-            return <FeaturedProducts key={block.id} heading={data.heading} limit={data.limit ?? 8} />;
-          case 'CATEGORY_GRID':
-            return <CategoryGrid key={block.id} heading={data.heading} />;
-          case 'BRAND_LOGOS':
-            return <BrandLogos key={block.id} heading={data.heading} brands={data.brands ?? []} />;
-          case 'CTA':
-            return <CtaBlock key={block.id} {...data} />;
-          default:
-            return null;
-        }
+        const inner = (() => {
+          switch (block.type) {
+            case 'HERO_CAROUSEL':    return <HeroCarousel slides={data.slides ?? []} />;
+            case 'PROMO_BANNER':     return <PromoBanner text={data.text} link={data.link} bgColor={data.bgColor} />;
+            case 'FEATURED_PRODUCTS': return <FeaturedProducts heading={data.heading} limit={data.limit ?? 8} />;
+            case 'CATEGORY_GRID':    return <CategoryGrid heading={data.heading} />;
+            case 'BRAND_LOGOS':      return <BrandLogos heading={data.heading} brands={data.brands ?? []} />;
+            case 'CTA':              return <CtaBlock {...data} />;
+            default:                 return null;
+          }
+        })();
+        if (!inner) return null;
+        return (
+          <div key={block.id} style={data.sectionBg ? { backgroundColor: data.sectionBg } : undefined}>
+            {inner}
+          </div>
+        );
       })}
     </div>
   );
