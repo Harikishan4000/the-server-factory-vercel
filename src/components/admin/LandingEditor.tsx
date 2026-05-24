@@ -146,14 +146,17 @@ export function LandingEditor({ blocks: initial }: { blocks: Block[] }) {
 }
 
 function BlockEditor({ block, onSave }: { block: Block; onSave: (data: any) => void }) {
-  const [json, setJson] = useState(JSON.stringify(block.data, null, 2));
+  // Strip sectionBg from the JSON editor so it's managed by the color picker only
+  const { sectionBg: _initialBg, ...restData } = (block.data ?? {}) as any;
+  const [json, setJson] = useState(JSON.stringify(restData, null, 2));
   const [err, setErr] = useState<string | null>(null);
+  const [sectionBg, setSectionBg] = useState<string>(_initialBg ?? '');
 
   function handleSave() {
     try {
       const parsed = JSON.parse(json);
       setErr(null);
-      onSave(parsed);
+      onSave(sectionBg ? { ...parsed, sectionBg } : parsed);
     } catch {
       setErr('Invalid JSON');
     }
@@ -161,6 +164,32 @@ function BlockEditor({ block, onSave }: { block: Block; onSave: (data: any) => v
 
   return (
     <div>
+      {/* Section background colour */}
+      <div className="mb-4 flex items-center gap-3 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-900">
+        <span className="text-xs font-semibold">Section Background</span>
+        <input
+          type="color"
+          value={sectionBg || '#ffffff'}
+          onChange={(e) => setSectionBg(e.target.value)}
+          className="h-8 w-10 cursor-pointer rounded border border-gray-200"
+          title="Pick a background colour for this section"
+        />
+        {sectionBg ? (
+          <>
+            <span className="font-mono text-xs text-ink-muted">{sectionBg}</span>
+            <button
+              type="button"
+              onClick={() => setSectionBg('')}
+              className="text-xs text-ink-muted hover:text-red-500"
+            >
+              Clear
+            </button>
+          </>
+        ) : (
+          <span className="text-xs text-ink-muted">None (transparent)</span>
+        )}
+      </div>
+
       <p className="mb-2 text-xs text-ink-muted">
         Edit the data payload below. Refer to the README for schema of each block type.
       </p>
