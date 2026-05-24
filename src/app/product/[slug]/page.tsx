@@ -77,9 +77,9 @@ export default async function ProductPage({ params }: Props) {
           <span className="text-ink dark:text-gray-200">{product.name}</span>
         </nav>
 
-        <div className="grid gap-6 lg:grid-cols-2 md:gap-10">
+        <div className="grid gap-6 lg:grid-cols-2 md:gap-10 lg:items-start">
           {/* Gallery */}
-          <div>
+          <div className="lg:sticky lg:top-20">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 shadow-soft">
               {product.images[0] && (
                 <Image
