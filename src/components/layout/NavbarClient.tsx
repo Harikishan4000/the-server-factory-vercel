@@ -83,8 +83,8 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
       <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-4 lg:px-8 2xl:max-w-[1600px] 3xl:max-w-[1760px]">
 
-          {/* Logo + hamburger */}
-          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+          {/* Logo + hamburger — never shrinks, so the wordmark is never clipped */}
+          <div className="flex flex-shrink-0 items-center gap-1 sm:gap-2">
             <button
               onClick={() => setMobileOpen(true)}
               className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden"
@@ -92,36 +92,41 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
             >
               <Menu className="h-5 w-5" />
             </button>
-            <Link href="/" className="truncate font-display text-lg font-extrabold tracking-tight sm:text-xl md:text-2xl">
+            <Link href="/" className="wordmark whitespace-nowrap font-display font-extrabold tracking-tight">
               <span className="text-brand">SERVER</span>
               <span className="text-ink dark:text-white">FACTORY</span>
             </Link>
           </div>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-0.5 lg:flex">
+          {/* Desktop nav — the flexible element, so any shortfall comes out of here
+              rather than squeezing the wordmark. Can't use overflow-x here: it would
+              clip the hover dropdowns, which hang below the bar. */}
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex">
             {roots.map((root) => {
               const hasChildren = root.children.length > 0;
               const isOpen = openId === root.id;
               return (
                 <div
                   key={root.id}
-                  className="relative"
+                  className="relative min-w-0"
                   onMouseEnter={() => { cancelClose(); if (hasChildren) setOpenId(root.id); }}
                   onMouseLeave={scheduleClose}
                 >
                   <Link
                     href={`/category/${root.slug}`}
                     className={cn(
-                      'flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-medium transition-colors xl:px-4',
+                      'flex items-center gap-1 rounded-full px-2.5 py-2 text-sm font-medium transition-colors xl:px-4',
                       isOpen
                         ? 'bg-brand-50 text-brand-700 dark:bg-gray-800 dark:text-brand'
                         : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800'
                     )}
                   >
-                    {root.name}
+                    {/* Safety net for unusually many or long categories: labels ellipsize
+                        before anything is allowed to push on the wordmark. Truncating here
+                        (not on the wrapper) keeps the dropdown out of the clipping context. */}
+                    <span className="truncate">{root.name}</span>
                     {hasChildren && (
-                      <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', isOpen && 'rotate-180')} />
+                      <ChevronDown className={cn('h-3.5 w-3.5 flex-shrink-0 transition-transform', isOpen && 'rotate-180')} />
                     )}
                   </Link>
 
@@ -159,17 +164,18 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
 
           {/* Right actions */}
           <div className="flex flex-shrink-0 items-center gap-1 sm:gap-2">
-            {/* Full search field only once there is room for it beside the nav links */}
-            <form action="/search" className="relative hidden xl:block">
+            {/* Full search field only from 2xl. Below that it costs ~210px the category
+                links need, and its absence just means one extra tap on the icon. */}
+            <form action="/search" className="relative hidden 2xl:block">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand" />
               <input
                 name="q"
                 placeholder="Search servers, workstations..."
-                className="w-52 rounded-full border-2 border-brand/30 py-2.5 pl-9 pr-4 text-sm font-medium outline-none transition-all placeholder:text-gray-400 focus:w-72 focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-gray-600 dark:bg-gray-900 dark:focus:border-brand 2xl:w-64 2xl:focus:w-80"
+                className="w-52 rounded-full border-2 border-brand/30 py-2.5 pl-9 pr-4 text-sm font-medium outline-none transition-all placeholder:text-gray-400 focus:w-72 focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-gray-600 dark:bg-gray-900 dark:focus:border-brand 3xl:w-64 3xl:focus:w-80"
               />
             </form>
             {/* Below xs the drawer carries the search entry so the wordmark isn't squeezed */}
-            <Link href="/search" className="hidden h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 xs:flex xl:hidden" aria-label="Search">
+            <Link href="/search" className="hidden h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 xs:flex 2xl:hidden" aria-label="Search">
               <Search className="h-4 w-4" />
             </Link>
 
@@ -183,11 +189,13 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
               <div className="relative" ref={userRef}>
                 <button
                   onClick={() => setUserOpen((v) => !v)}
-                  className="flex h-9 items-center gap-1.5 rounded-full bg-brand-50 px-3 text-sm font-semibold text-brand-700 transition hover:bg-brand hover:text-white dark:bg-gray-800 dark:text-gray-100"
+                  className="flex h-9 w-9 items-center justify-center gap-1.5 rounded-full bg-brand-50 text-sm font-semibold text-brand-700 transition hover:bg-brand hover:text-white dark:bg-gray-800 dark:text-gray-100 xs:w-auto xs:px-3"
+                  aria-label="Account menu"
                 >
-                  <User className="h-4 w-4" />
-                  <span className="hidden sm:inline">{user.name?.split(' ')[0] ?? 'Account'}</span>
-                  <ChevronDown className="h-3 w-3" />
+                  <User className="h-4 w-4 flex-shrink-0" />
+                  {/* A long first name must not push the wordmark — cap and ellipsize it */}
+                  <span className="hidden max-w-[7rem] truncate sm:inline">{user.name?.split(' ')[0] ?? 'Account'}</span>
+                  <ChevronDown className="hidden h-3 w-3 flex-shrink-0 xs:block" />
                 </button>
 
                 {userOpen && (
