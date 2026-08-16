@@ -19,7 +19,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
   const slide = slides[i];
 
   return (
-    <section className="relative h-[560px] overflow-hidden">
+    <section className="relative h-[clamp(24rem,70vh,40rem)] overflow-hidden">
       {slides.map((s, idx) => (
         <div
           key={idx}
@@ -32,8 +32,8 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
         />
       ))}
 
-      <div className="relative z-10 mx-auto flex h-full max-w-4xl flex-col items-center justify-center px-4 text-center text-white">
-        <h1 className="animate-slide-up font-display text-5xl font-extrabold leading-tight md:text-6xl">
+      <div className="relative z-10 mx-auto flex h-full max-w-4xl flex-col items-center justify-center px-4 text-center text-white xs:px-14 sm:px-16 2xl:max-w-5xl">
+        <h1 className="heading-hero animate-slide-up font-display font-extrabold">
           {slide.heading.split(' ').map((w, idx, arr) => {
             const midpoint = Math.floor(arr.length / 2);
             return idx >= midpoint ? (
@@ -44,11 +44,11 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
           })}
         </h1>
         {slide.subheading && (
-          <p className="mt-6 max-w-2xl text-lg text-gray-200">{slide.subheading}</p>
+          <p className="mt-4 max-w-2xl text-sm text-gray-200 sm:mt-6 sm:text-base md:text-lg">{slide.subheading}</p>
         )}
 
         {slide.ctaText && slide.ctaLink && (
-          <Link href={slide.ctaLink} className="mt-6 text-sm font-semibold text-brand-300 underline underline-offset-4 hover:text-brand-200">
+          <Link href={slide.ctaLink} className="mt-5 text-sm font-semibold text-brand-300 underline underline-offset-4 hover:text-brand-200 sm:mt-6">
             {slide.ctaText} →
           </Link>
         )}
@@ -56,28 +56,32 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
 
       {slides.length > 1 && (
         <>
+          {/* Hidden on the narrowest phones — the dots below stay reachable and the
+              heading gets the full width instead of dodging two floating buttons */}
           <button
             onClick={() => setI((v) => (v - 1 + slides.length) % slides.length)}
-            className="absolute left-6 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow-xl dark:bg-gray-900/90 dark:text-gray-100 backdrop-blur transition hover:bg-white"
+            className="absolute left-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow-xl backdrop-blur transition hover:bg-white dark:bg-gray-900/90 dark:text-gray-100 xs:flex sm:left-4 sm:h-12 sm:w-12 lg:left-6"
             aria-label="Previous slide"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => setI((v) => (v + 1) % slides.length)}
-            className="absolute right-6 top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow-xl dark:bg-gray-900/90 dark:text-gray-100 backdrop-blur transition hover:bg-white"
+            className="absolute right-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-ink shadow-xl backdrop-blur transition hover:bg-white dark:bg-gray-900/90 dark:text-gray-100 xs:flex sm:right-4 sm:h-12 sm:w-12 lg:right-6"
             aria-label="Next slide"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
-          <div className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+          <div className="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2 sm:bottom-6">
             {slides.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setI(idx)}
-                className={`h-2 rounded-full transition-all ${idx === i ? 'w-8 bg-brand' : 'w-2 bg-white/50'}`}
+                className="flex h-8 items-center px-1"
                 aria-label={`Go to slide ${idx + 1}`}
-              />
+              >
+                <span className={`block h-2 rounded-full transition-all ${idx === i ? 'w-8 bg-brand' : 'w-2 bg-white/50'}`} />
+              </button>
             ))}
           </div>
         </>

@@ -77,7 +77,7 @@ export function CheckoutForm({ user }: { user: UserProfile }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 grid gap-6 lg:grid-cols-[1fr_380px] md:mt-10 md:gap-8">
+    <form onSubmit={handleSubmit} className="mt-6 grid gap-6 lg:grid-cols-[1fr_340px] md:mt-10 md:gap-8 xl:grid-cols-[1fr_380px]">
       {/* Billing form */}
       <div className="space-y-4 md:space-y-6">
         <div className="card p-4 md:p-6">
@@ -111,7 +111,7 @@ export function CheckoutForm({ user }: { user: UserProfile }) {
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
               rows={3}
-              className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+              className="mt-2 w-full min-w-0 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-base outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
               placeholder="Any special delivery instructions?"
             />
           </div>
@@ -167,7 +167,7 @@ function Field({ label, value, onChange, type = 'text', required = false }: { la
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+        className="mt-1 w-full min-w-0 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-base outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
       />
     </div>
   );

@@ -16,27 +16,27 @@ export async function CategoryGrid({ heading }: { heading?: string }) {
   if (!cats.length) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 lg:px-8">
-      <h2 className="mb-10 font-display text-3xl font-bold md:text-4xl">
+    <section className="container-page py-10 sm:py-12 md:py-16">
+      <h2 className="heading-section mb-6 font-display font-bold sm:mb-8 md:mb-10">
         {heading ?? 'Shop by Category'}
       </h2>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-4 md:gap-6">
         {cats.map((cat) => {
           const Icon = ICONS[cat.slug] ?? Server;
           return (
             <Link
               key={cat.id}
               href={`/category/${cat.slug}`}
-              className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 shadow-soft transition hover:-translate-y-1 hover:border-brand hover:shadow-brand"
+              className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-soft transition hover:-translate-y-1 hover:border-brand hover:shadow-brand dark:border-gray-800 dark:bg-gray-900 sm:p-6 lg:p-8"
             >
-              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-brand-50 transition-transform duration-500 group-hover:scale-150" />
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-brand-50 transition-transform duration-500 group-hover:scale-150 dark:bg-brand/10" />
               <div className="relative">
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand text-white">
-                  <Icon className="h-6 w-6" />
+                <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand text-white sm:mb-4 sm:h-12 sm:w-12">
+                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-ink dark:text-gray-100">{cat.name}</h3>
-                {cat.description && <p className="mt-2 text-sm text-ink-muted">{cat.description}</p>}
-                <span className="mt-4 inline-block text-sm font-semibold text-brand">Explore →</span>
+                <h3 className="font-display text-lg font-bold text-ink dark:text-gray-100 sm:text-xl">{cat.name}</h3>
+                {cat.description && <p className="mt-2 text-sm text-ink-muted dark:text-gray-400">{cat.description}</p>}
+                <span className="mt-3 inline-block text-sm font-semibold text-brand sm:mt-4">Explore →</span>
               </div>
             </Link>
           );

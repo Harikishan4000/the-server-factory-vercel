@@ -11,20 +11,20 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-16 lg:px-8">
+    <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 md:py-16 lg:px-8">
       <div className="text-center">
-        <h1 className="font-display text-5xl font-extrabold md:text-6xl">
+        <h1 className="heading-hero font-display font-extrabold">
           About <span className="text-brand">ServerFactory</span>
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted">
+        <p className="mx-auto mt-4 max-w-2xl text-base text-ink-muted sm:mt-6 sm:text-lg">
           We build India&apos;s most transparent marketplace for enterprise hardware — Dell, HP, Lenovo, NVIDIA and more,
           with fully customisable configurations and honest pricing.
         </p>
       </div>
 
-      <section className="mt-20 grid gap-8 md:grid-cols-2">
+      <section className="mt-12 grid gap-8 md:mt-20 md:grid-cols-2">
         <div>
-          <h2 className="font-display text-3xl font-bold">Our mission</h2>
+          <h2 className="heading-section font-display font-bold">Our mission</h2>
           <p className="mt-4 leading-relaxed text-ink-muted">
             Buying enterprise servers shouldn&apos;t require a week of phone calls and three sales-rep follow-ups.
             ServerFactory puts the configurator online — pick your CPU, RAM, storage, OS and add-ons, see the real price,
@@ -32,7 +32,7 @@ export default function AboutPage() {
           </p>
         </div>
         <div>
-          <h2 className="font-display text-3xl font-bold">What we sell</h2>
+          <h2 className="heading-section font-display font-bold">What we sell</h2>
           <ul className="mt-4 space-y-2 text-ink-muted">
             {[
               'Rack servers (Dell PowerEdge, HPE ProLiant, Lenovo ThinkSystem)',
@@ -51,31 +51,31 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="mt-24 grid gap-6 md:grid-cols-4">
+      <section className="mt-12 grid gap-4 xs:grid-cols-2 md:mt-24 md:grid-cols-4 md:gap-6">
         {[
           { icon: Server, title: 'Configurator-first', desc: 'Build your exact server online — no quotes required.' },
           { icon: Shield, title: 'Warranty included', desc: 'OEM warranty + optional extended support.' },
           { icon: Truck, title: 'Pan-India delivery', desc: 'Fast dispatch from Bengaluru across all states.' },
           { icon: Users, title: 'Engineer support', desc: 'Free pre-sales consultation for demanding workloads.' },
         ].map((v) => (
-          <div key={v.title} className="card p-6 text-center">
-            <v.icon className="mx-auto h-10 w-10 text-brand" />
-            <h3 className="mt-4 font-display font-bold">{v.title}</h3>
-            <p className="mt-2 text-sm text-ink-muted">{v.desc}</p>
+          <div key={v.title} className="card p-4 text-center sm:p-6">
+            <v.icon className="mx-auto h-8 w-8 text-brand sm:h-10 sm:w-10" />
+            <h3 className="mt-3 font-display text-sm font-bold sm:mt-4 sm:text-base">{v.title}</h3>
+            <p className="mt-2 text-xs text-ink-muted sm:text-sm">{v.desc}</p>
           </div>
         ))}
       </section>
 
-      <section className="mt-24 overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-brand-400 px-8 py-16 text-center text-white shadow-brand md:px-16">
-        <h2 className="font-display text-3xl font-extrabold md:text-4xl">Ready to build your server?</h2>
-        <p className="mx-auto mt-4 max-w-2xl text-white/90">
+      <section className="mt-12 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 to-brand-400 px-5 py-10 text-center text-white shadow-brand sm:rounded-3xl sm:px-8 sm:py-12 md:mt-24 md:px-16 md:py-16">
+        <h2 className="heading-section font-display font-extrabold">Ready to build your server?</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-white/90 sm:text-base">
           Start configuring from 60+ enterprise models, or talk to an engineer for custom requirements.
         </p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/category/servers" className="rounded-full bg-white px-8 py-3 font-bold text-brand-700 hover:scale-105">
+        <div className="mt-6 flex flex-col justify-center gap-3 xs:flex-row xs:flex-wrap sm:mt-8">
+          <Link href="/category/servers" className="rounded-full bg-white px-6 py-3 text-sm font-bold text-brand-700 transition hover:scale-105 sm:px-8 sm:text-base">
             Shop Servers
           </Link>
-          <Link href="/contact" className="rounded-full border-2 border-white px-8 py-3 font-bold text-white hover:bg-white hover:text-brand-700">
+          <Link href="/contact" className="rounded-full border-2 border-white px-6 py-3 text-sm font-bold text-white transition hover:bg-white hover:text-brand-700 sm:px-8 sm:text-base">
             Talk to an engineer
           </Link>
         </div>

@@ -25,18 +25,20 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
     : [];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
-      <h1 className="font-display text-4xl font-extrabold">Search</h1>
-      <form action="/search" className="mt-6 flex items-center gap-2 rounded-full bg-white p-2 shadow-soft">
-        <Search className="ml-4 h-5 w-5 text-brand" />
+    <div className="container-page py-8 md:py-10">
+      <h1 className="heading-page font-display font-extrabold">Search</h1>
+      <form action="/search" className="mt-5 flex items-center gap-2 rounded-full bg-white p-1.5 shadow-soft dark:bg-gray-900 sm:mt-6 sm:p-2">
+        <Search className="ml-3 hidden h-5 w-5 flex-shrink-0 text-brand xs:block sm:ml-4" />
         <input
           name="q"
           defaultValue={q}
           autoFocus
           placeholder="Search for servers, workstations, CPUs..."
-          className="flex-1 bg-transparent px-2 py-2 text-base outline-none placeholder:text-gray-400"
+          className="w-full min-w-0 flex-1 bg-transparent px-3 py-2 text-base outline-none placeholder:text-gray-400 sm:px-2"
         />
-        <button className="rounded-full bg-brand px-6 py-2.5 font-semibold text-white hover:bg-brand-600">Search</button>
+        <button className="flex-shrink-0 rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 sm:px-6 sm:text-base">
+          Search
+        </button>
       </form>
 
       {q ? (
@@ -47,7 +49,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
         <p className="mt-6 text-sm text-ink-muted">Enter a search term to find products.</p>
       )}
 
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-3 md:mt-8 md:gap-6 xl:grid-cols-4 3xl:grid-cols-5">
         {products.map((p) => <ProductCard key={p.id} product={p} />)}
       </div>
     </div>

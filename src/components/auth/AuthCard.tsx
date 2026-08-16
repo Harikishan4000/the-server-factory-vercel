@@ -92,7 +92,7 @@ export function AuthCard({ initialTab, callbackUrl }: { initialTab: 'login' | 'r
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+              className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-base outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
               placeholder="Jane Doe"
             />
           </div>
@@ -107,7 +107,7 @@ export function AuthCard({ initialTab, callbackUrl }: { initialTab: 'login' | 'r
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+            className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-base outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
             placeholder="name@company.com"
           />
         </div>
@@ -122,7 +122,7 @@ export function AuthCard({ initialTab, callbackUrl }: { initialTab: 'login' | 'r
             type="password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+            className="mt-2 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-base outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
             placeholder="••••••••"
           />
         </div>

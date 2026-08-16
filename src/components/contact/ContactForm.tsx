@@ -30,7 +30,7 @@ export function ContactForm() {
 
   if (sent) {
     return (
-      <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-8 text-center">
+      <div className="mt-6 rounded-2xl border border-green-200 bg-green-50 p-6 text-center sm:p-8">
         <CheckCircle2 className="mx-auto h-12 w-12 text-green-500" />
         <h3 className="mt-4 font-display text-xl font-bold text-green-800">Message sent!</h3>
         <p className="mt-2 text-green-700">We&apos;ll get back to you within 4 business hours.</p>
@@ -53,7 +53,7 @@ export function ContactForm() {
           value={form.message}
           onChange={(e) => setForm({ ...form, message: e.target.value })}
           rows={5}
-          className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+          className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-base outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
           placeholder="Tell us about your requirements..."
         />
       </div>
@@ -74,7 +74,7 @@ function Field({ label, value, onChange, type = 'text', required = false }: { la
         required={required}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+        className="mt-1 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-base outline-none focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
       />
     </div>
   );
