@@ -15,6 +15,12 @@ import type { CategoryNode } from '@/lib/categories';
 
 type UserInfo = { name: string | null; email: string; role: 'USER' | 'ADMIN' } | null;
 
+/** Static company pages that sit alongside the category roots in the nav */
+const PAGE_LINKS = [
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+
 export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: UserInfo }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
@@ -75,18 +81,18 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
   return (
     <>
       <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/95 backdrop-blur dark:border-gray-800 dark:bg-gray-950/95">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:gap-3 sm:px-4 lg:px-8 2xl:max-w-[1600px] 3xl:max-w-[1760px]">
 
           {/* Logo + hamburger */}
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-1 sm:gap-2">
             <button
               onClick={() => setMobileOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden"
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <Link href="/" className="font-display text-xl font-extrabold tracking-tight md:text-2xl">
+            <Link href="/" className="truncate font-display text-lg font-extrabold tracking-tight sm:text-xl md:text-2xl">
               <span className="text-brand">SERVER</span>
               <span className="text-ink dark:text-white">FACTORY</span>
             </Link>
@@ -107,7 +113,7 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
                   <Link
                     href={`/category/${root.slug}`}
                     className={cn(
-                      'flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors',
+                      'flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-medium transition-colors xl:px-4',
                       isOpen
                         ? 'bg-brand-50 text-brand-700 dark:bg-gray-800 dark:text-brand'
                         : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800'
@@ -134,23 +140,43 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
                 </div>
               );
             })}
+
+            {PAGE_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  'whitespace-nowrap rounded-full px-2.5 py-2 text-sm font-medium transition-colors xl:px-4',
+                  pathname === link.href
+                    ? 'bg-brand-50 text-brand-700 dark:bg-gray-800 dark:text-brand'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-200 dark:hover:bg-gray-800'
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-2">
-            <form action="/search" className="relative hidden md:block">
-  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand" />
-  <input
-    name="q"
-    placeholder="Search servers, workstations..."
-    className="w-64 rounded-full border-2 border-brand/30 bg-green py-2.5 pl-9 pr-4 text-sm font-medium outline-none transition-all placeholder:text-gray-400 focus:w-80 focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-gray-600 dark:bg-gray-900 dark:focus:border-brand"
-  />
-</form>
-            <Link href="/search" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden" aria-label="Search">
+          <div className="flex flex-shrink-0 items-center gap-1 sm:gap-2">
+            {/* Full search field only once there is room for it beside the nav links */}
+            <form action="/search" className="relative hidden xl:block">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand" />
+              <input
+                name="q"
+                placeholder="Search servers, workstations..."
+                className="w-52 rounded-full border-2 border-brand/30 py-2.5 pl-9 pr-4 text-sm font-medium outline-none transition-all placeholder:text-gray-400 focus:w-72 focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-gray-600 dark:bg-gray-900 dark:focus:border-brand 2xl:w-64 2xl:focus:w-80"
+              />
+            </form>
+            {/* Below xs the drawer carries the search entry so the wordmark isn't squeezed */}
+            <Link href="/search" className="hidden h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 xs:flex xl:hidden" aria-label="Search">
               <Search className="h-4 w-4" />
             </Link>
 
-            <ThemeToggle />
+            {/* Below xs the header can't fit this too — the drawer carries a Theme row instead */}
+            <span className="hidden xs:block">
+              <ThemeToggle />
+            </span>
             <CartIcon />
 
             {user ? (
@@ -195,8 +221,13 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
                 )}
               </div>
             ) : (
-              <Link href="/login" className="flex h-9 items-center rounded-full bg-brand px-4 text-sm font-semibold text-white transition hover:bg-brand-600">
-                Sign in
+              <Link
+                href="/login"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white transition hover:bg-brand-600 xs:w-auto xs:px-4"
+                aria-label="Sign in"
+              >
+                <User className="h-4 w-4 xs:hidden" />
+                <span className="hidden xs:inline">Sign in</span>
               </Link>
             )}
           </div>
@@ -218,6 +249,14 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
             </div>
 
             <div className="flex-1 overflow-y-auto">
+              <form action="/search" className="relative px-3 pt-3 xs:hidden">
+                <Search className="pointer-events-none absolute left-6 top-1/2 h-4 w-4 -translate-y-1/2 text-brand" />
+                <input
+                  name="q"
+                  placeholder="Search hardware..."
+                  className="w-full rounded-full border border-gray-200 py-2.5 pl-9 pr-3 text-base outline-none focus:border-brand dark:border-gray-700 dark:bg-gray-800"
+                />
+              </form>
               <nav className="p-3">
                 {roots.map((root) => (
                   <MobileNode
@@ -229,10 +268,26 @@ export function NavbarClient({ roots, user }: { roots: CategoryNode[]; user: Use
                     onNavigate={() => setMobileOpen(false)}
                   />
                 ))}
+
+                <div className="my-2 border-t border-gray-100 dark:border-gray-800" />
+                {PAGE_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-lg px-3 py-2.5 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
               </nav>
             </div>
 
             <div className="border-t border-gray-100 p-4 dark:border-gray-800">
+              <div className="mb-2 flex items-center justify-between px-3 xs:hidden">
+                <span className="text-sm text-gray-500">Theme</span>
+                <ThemeToggle />
+              </div>
               {user ? (
                 <div className="space-y-1">
                   <p className="px-3 text-xs text-gray-500">{user.email}</p>

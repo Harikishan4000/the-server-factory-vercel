@@ -5,10 +5,10 @@ import { Mail, Phone, MapPin } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="mt-16 border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950 md:mt-24">
-      <div className="mx-auto max-w-7xl px-4 py-12 lg:px-8 md:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="sm:col-span-2 lg:col-span-2">
+    <footer className="mt-12 border-t border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950 md:mt-24">
+      <div className="container-page py-10 md:py-16">
+        <div className="grid gap-8 xs:grid-cols-2 md:gap-10 lg:grid-cols-5">
+          <div className="xs:col-span-2">
             <Link href="/" className="flex items-center gap-2">
               <span className="font-display text-xl font-extrabold tracking-tight sm:text-2xl">
                 <span className="text-brand">SERVER</span>
@@ -20,17 +20,17 @@ export function Footer() {
               and data-center components from Dell, HP, Lenovo, NVIDIA and more.
             </p>
             <div className="mt-6 space-y-2 text-sm text-ink-muted dark:text-gray-400">
-  <a href="mailto:sales@serverfactory.com" className="flex items-center gap-2 hover:text-brand transition-colors">
-    <Mail className="h-4 w-4 text-brand" /> sales@serverfactory.com
-  </a>
-  <a href="tel:+918040000000" className="flex items-center gap-2 hover:text-brand transition-colors">
-    <Phone className="h-4 w-4 text-brand" /> +91 80 4000 0000
-  </a>
-  <Link href="/contact" className="flex items-center gap-2 hover:text-brand transition-colors">
-    <MapPin className="h-4 w-4 text-brand" /> Bengaluru, Karnataka, India
-  </Link>
- </div>
-</div>
+              <a href="mailto:sales@serverfactory.com" className="flex items-center gap-2 transition-colors hover:text-brand">
+                <Mail className="h-4 w-4 flex-shrink-0 text-brand" /> <span className="min-w-0 break-all">sales@serverfactory.com</span>
+              </a>
+              <a href="tel:+918040000000" className="flex items-center gap-2 transition-colors hover:text-brand">
+                <Phone className="h-4 w-4 flex-shrink-0 text-brand" /> +91 80 4000 0000
+              </a>
+              <Link href="/contact" className="flex items-center gap-2 transition-colors hover:text-brand">
+                <MapPin className="h-4 w-4 flex-shrink-0 text-brand" /> <span className="min-w-0">Bengaluru, Karnataka, India</span>
+              </Link>
+            </div>
+          </div>
 
           <div>
             <h4 className="font-display text-sm font-semibold uppercase tracking-wider text-ink dark:text-gray-100">Shop</h4>

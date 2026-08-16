@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ChevronRight, Folder } from 'lucide-react';
+import { Folder } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { ProductCard } from '@/components/product/ProductCard';
 import { CategoryFilters } from '@/components/catalog/CategoryFilters';
 import { SortDropdown } from '@/components/catalog/SortDropdown';
+import { CategoryBreadcrumb } from '@/components/layout/CategoryBreadcrumb';
 import { getCategoryTree, findBySlug, getBreadcrumb, collectDescendantIds } from '@/lib/categories';
 
 type Props = {
@@ -77,26 +78,23 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const hasSubcategories = node.children.length > 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8 md:py-10">
+    <div className="container-page py-6 md:py-10">
       {/* Breadcrumb */}
-      <nav className="mb-3 flex flex-wrap items-center gap-1 text-xs text-ink-muted dark:text-gray-400 md:text-sm">
-        <Link href="/" className="hover:text-brand">Home</Link>
-        {breadcrumb.map((crumb, idx) => (
-          <span key={crumb.id} className="flex items-center gap-1">
-            <ChevronRight className="h-3 w-3 opacity-50" />
-            {idx === breadcrumb.length - 1 ? (
-              <span className="text-ink dark:text-gray-200">{crumb.name}</span>
-            ) : (
-              <Link href={`/category/${crumb.slug}`} className="hover:text-brand">{crumb.name}</Link>
-            )}
-          </span>
-        ))}
-      </nav>
+      <CategoryBreadcrumb
+        crumbs={[
+          { label: 'Home', href: '/', children: tree },
+          ...breadcrumb.map((crumb, idx) => ({
+            label: crumb.name,
+            href: idx === breadcrumb.length - 1 ? null : `/category/${crumb.slug}`,
+            children: crumb.children,
+          })),
+        ]}
+      />
 
       {/* Header */}
       <div className="mb-6 flex flex-col items-start justify-between gap-4 md:mb-8 md:flex-row md:items-center md:gap-6">
         <div>
-          <h1 className="font-display text-3xl font-extrabold md:text-5xl">
+          <h1 className="heading-page font-display font-extrabold">
             {node.name.split(' ')[0]}{' '}
             <span className="text-brand">{node.name.split(' ').slice(1).join(' ') || 'Catalog'}</span>
           </h1>
@@ -110,7 +108,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           <h2 className="mb-4 font-display text-sm font-bold uppercase tracking-wider text-ink-muted dark:text-gray-400">
             Browse by sub-category
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
+          <div className="grid gap-3 xs:grid-cols-2 md:gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {node.children.map((sub) => (
               <Link
                 key={sub.id}
@@ -136,7 +134,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       )}
 
       {/* Products section */}
-      <div className="grid gap-6 lg:grid-cols-[280px_1fr] md:gap-8">
+      <div className="grid gap-6 lg:grid-cols-[260px_1fr] md:gap-8 xl:grid-cols-[280px_1fr]">
         <CategoryFilters
           brands={allBrands.map((b) => b.brand!).filter(Boolean)}
           currentSlug={node.slug}
@@ -162,7 +160,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
               </p>
             </div>
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
+            <div className="grid gap-4 xs:grid-cols-2 lg:grid-cols-2 md:gap-6 xl:grid-cols-3 3xl:grid-cols-4">
               {products.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

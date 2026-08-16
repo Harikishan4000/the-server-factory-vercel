@@ -23,10 +23,10 @@ export default async function AccountPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 md:py-10 lg:px-8">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 md:py-10 lg:px-8">
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-extrabold md:text-4xl">
+          <h1 className="heading-page font-display font-extrabold">
             Hello, <span className="text-brand">{user?.name ?? 'there'}</span>
           </h1>
           <p className="mt-2 text-sm text-ink-muted dark:text-gray-400 md:text-base">{user?.email}</p>

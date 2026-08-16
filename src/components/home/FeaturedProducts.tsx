@@ -14,13 +14,13 @@ export async function FeaturedProducts({ heading, limit = 8 }: { heading?: strin
   if (!products.length) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 lg:px-8">
-      <div className="mb-10 flex items-end justify-between">
-        <h2 className="font-display text-3xl font-bold md:text-4xl">
+    <section className="container-page py-10 sm:py-12 md:py-16">
+      <div className="mb-6 flex items-end justify-between sm:mb-8 md:mb-10">
+        <h2 className="heading-section font-display font-bold">
           {heading ?? 'Featured '}<span className="text-brand">Hardware</span>
         </h2>
       </div>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 xs:grid-cols-2 sm:gap-5 lg:grid-cols-3 md:gap-6 xl:grid-cols-4 3xl:grid-cols-5">
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}

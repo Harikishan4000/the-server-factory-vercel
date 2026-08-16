@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { formatINR } from '@/lib/utils';
+import { getCategoryTree, getBreadcrumb } from '@/lib/categories';
 import { Configurator } from '@/components/product/Configurator';
+import { CategoryBreadcrumb } from '@/components/layout/CategoryBreadcrumb';
 
 type Props = { params: { slug: string } };
 
@@ -49,6 +50,18 @@ export default async function ProductPage({ params }: Props) {
 
   if (!product || !product.isActive) notFound();
 
+  // Full category trail (Servers → Rack Servers → 1U) so each crumb can offer its own flyout
+  const tree = await getCategoryTree();
+  const trail = getBreadcrumb(tree, product.category.slug);
+  const categoryCrumbs = trail.length > 0
+    ? trail.map((crumb) => ({
+        label: crumb.name,
+        href: `/category/${crumb.slug}`,
+        children: crumb.children,
+      }))
+    // Category is hidden (so absent from the tree) — fall back to a flat link
+    : [{ label: product.category.name, href: `/category/${product.category.slug}`, children: [] }];
+
   // JSON-LD Product schema for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -70,14 +83,16 @@ export default async function ProductPage({ params }: Props) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8 md:py-10">
-        <nav className="mb-4 text-xs text-ink-muted dark:text-gray-400 md:mb-6 md:text-sm">
-          <Link href="/" className="hover:text-brand">Home</Link> /{' '}
-          <Link href={`/category/${product.category.slug}`} className="hover:text-brand">{product.category.name}</Link> /{' '}
-          <span className="text-ink dark:text-gray-200">{product.name}</span>
-        </nav>
+      <div className="container-page py-6 md:py-10">
+        <CategoryBreadcrumb
+          crumbs={[
+            { label: 'Home', href: '/', children: tree },
+            ...categoryCrumbs,
+            { label: product.name, href: null, children: [] },
+          ]}
+        />
 
-        <div className="grid gap-6 lg:grid-cols-2 md:gap-10 lg:items-start">
+        <div className="grid gap-6 lg:grid-cols-2 md:gap-10 lg:items-start 2xl:gap-14">
           {/* Gallery */}
           <div className="lg:sticky lg:top-20">
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 shadow-soft">
@@ -93,10 +108,10 @@ export default async function ProductPage({ params }: Props) {
               )}
             </div>
             {product.images.length > 1 && (
-              <div className="mt-4 grid grid-cols-5 gap-2">
+              <div className="mt-3 grid grid-cols-4 gap-2 xs:grid-cols-5 md:mt-4">
                 {product.images.map((img) => (
-                  <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
-                    <Image src={img.url} alt={img.alt ?? ''} fill sizes="100px" className="object-cover" />
+                  <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+                    <Image src={img.url} alt={img.alt ?? ''} fill sizes="(max-width: 1024px) 20vw, 100px" className="object-cover" />
                   </div>
                 ))}
               </div>
@@ -108,12 +123,12 @@ export default async function ProductPage({ params }: Props) {
             {product.brand && (
               <p className="text-xs font-bold uppercase tracking-wider text-brand">{product.brand}</p>
             )}
-            <h1 className="mt-1 font-display text-2xl font-extrabold md:text-4xl">{product.name}</h1>
-            {product.shortDesc && <p className="mt-2 text-base text-ink-muted dark:text-gray-400 md:mt-3 md:text-lg">{product.shortDesc}</p>}
+            <h1 className="heading-page mt-1 font-display font-extrabold">{product.name}</h1>
+            {product.shortDesc && <p className="mt-2 text-sm text-ink-muted dark:text-gray-400 sm:text-base md:mt-3 md:text-lg">{product.shortDesc}</p>}
 
-            <div className="mt-4 flex items-baseline gap-3 border-b border-gray-100 pb-4 dark:border-gray-800 md:mt-6 md:pb-6">
+            <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-gray-100 pb-4 dark:border-gray-800 md:mt-6 md:pb-6">
               <span className="text-xs text-ink-muted dark:text-gray-400 md:text-sm">Starting at</span>
-              <span className="text-3xl font-extrabold md:text-4xl">{formatINR(product.basePrice)}</span>
+              <span className="text-2xl font-extrabold xs:text-3xl md:text-4xl">{formatINR(product.basePrice)}</span>
             </div>
 
             <div className="mt-6 md:mt-8">
@@ -152,7 +167,7 @@ export default async function ProductPage({ params }: Props) {
 
         {product.description && (
           <section className="mt-10 max-w-4xl md:mt-16">
-            <h2 className="font-display text-xl font-bold md:text-2xl">About this {product.category.name}</h2>
+            <h2 className="font-display text-lg font-bold sm:text-xl md:text-2xl">About this {product.category.name}</h2>
             <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-ink-muted dark:text-gray-400 md:mt-4 md:text-base">{product.description}</p>
           </section>
         )}

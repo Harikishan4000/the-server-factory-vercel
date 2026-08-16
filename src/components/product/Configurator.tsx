@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ShoppingCart, Sparkles, Wrench } from 'lucide-react';
 import { useCart, type CartOption, type CartTier } from '@/components/cart/CartProvider';
@@ -40,59 +40,60 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
   };
   const [customSelections, setCustomSelections] = useState<Record<string, string>>(initCustom);
 
-  // Quick-pick mode: selected tier + editable overrides
-  const sortedTiers = useMemo(
-    () => [...tiers].sort((a, b) => TIER_ORDER.indexOf(a.name) - TIER_ORDER.indexOf(b.name)),
-    [tiers]
-  );
-  const [activeTierId, setActiveTierId] = useState<string | null>(sortedTiers[0]?.id ?? null);
+  // Tiers are fixed bundles: resolve each one's components and price up-front.
+  // Nothing inside a tier is editable — customisation happens in Customize mode.
+  const tierDetails = useMemo(() => {
+    return [...tiers]
+      .sort((a, b) => TIER_ORDER.indexOf(a.name) - TIER_ORDER.indexOf(b.name))
+      .map((tier) => {
+        const selections: Record<string, string> = {};
+        const specs: { groupLabel: string; valueLabel: string }[] = [];
+        let sum = product.basePrice;
 
-  // Start tier-selections from the tier's preset bundle. User can override inside quick mode too.
-  const tierBaseSelections = useMemo(() => {
-    const tier = sortedTiers.find((t) => t.id === activeTierId);
-    if (!tier) return {};
-    const result: Record<string, string> = {};
-    for (const g of groups) {
-      const tierPick = g.values.find((v) => tier.selectionValueIds.includes(v.id));
-      const def = g.values.find((v) => v.isDefault) ?? g.values[0];
-      if (tierPick) result[g.id] = tierPick.id;
-      else if (def) result[g.id] = def.id;
-    }
-    return result;
-  }, [activeTierId, sortedTiers, groups]);
+        for (const g of groups) {
+          const picked = g.values.find((v) => tier.selectionValueIds.includes(v.id))
+            ?? g.values.find((v) => v.isDefault)
+            ?? g.values[0];
+          if (!picked) continue;
+          selections[g.id] = picked.id;
+          specs.push({ groupLabel: g.label, valueLabel: picked.label });
+          sum += picked.priceDelta;
+        }
 
-  const [quickSelections, setQuickSelections] = useState<Record<string, string>>(tierBaseSelections);
-  // Reset quickSelections when tier changes
-  useEffect(() => {
-    setQuickSelections(tierBaseSelections);
-  }, [tierBaseSelections]);
+        return {
+          tier,
+          selections,
+          specs,
+          price: tier.priceOverride ?? sum,
+        };
+      });
+  }, [tiers, groups, product.basePrice]);
+
+  const [activeTierId, setActiveTierId] = useState<string | null>(tierDetails[0]?.tier.id ?? null);
 
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
   // ── Price calculation ────────────────────
-  const activeTier = sortedTiers.find((t) => t.id === activeTierId);
-  const activeSelections = mode === 'quick' ? quickSelections : customSelections;
+  const activeDetail = tierDetails.find((d) => d.tier.id === activeTierId);
+  const activeTier = activeDetail?.tier;
+  const activeSelections = mode === 'quick' ? (activeDetail?.selections ?? {}) : customSelections;
 
   const unitPrice = useMemo(() => {
-    // In quick mode, if tier has an override AND user hasn't customised → use override
-    if (mode === 'quick' && activeTier?.priceOverride !== null && activeTier?.priceOverride !== undefined) {
-      const customised = Object.keys(quickSelections).some((gid) => quickSelections[gid] !== tierBaseSelections[gid]);
-      if (!customised) return Number(activeTier.priceOverride);
-    }
-    // Otherwise sum up base + selected priceDeltas
+    if (mode === 'quick') return activeDetail?.price ?? product.basePrice;
+
     let sum = product.basePrice;
     for (const g of groups) {
-      const v = g.values.find((x) => x.id === activeSelections[g.id]);
+      const v = g.values.find((x) => x.id === customSelections[g.id]);
       if (v) sum += v.priceDelta;
     }
     return sum;
-  }, [mode, activeTier, quickSelections, tierBaseSelections, customSelections, product.basePrice, groups, activeSelections]);
+  }, [mode, activeDetail, customSelections, product.basePrice, groups]);
 
   const totalPrice = unitPrice * qty;
 
   function handleAdd(goToCart = false) {
-    const selections = mode === 'quick' ? quickSelections : customSelections;
+    const selections = activeSelections;
     const options: CartOption[] = groups
       .map((g) => {
         const v = g.values.find((x) => x.id === selections[g.id]);
@@ -151,7 +152,7 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
               mode === 'custom' ? 'bg-brand text-white shadow-brand' : 'text-ink-muted dark:text-gray-300'
             )}
           >
-            <Wrench className="h-4 w-4" /> Custom Build
+            <Wrench className="h-4 w-4" /> Customize
           </button>
         </div>
       )}
@@ -162,15 +163,15 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
         </h3>
         <p className="mt-1 text-sm text-ink-muted dark:text-gray-400">
           {mode === 'quick'
-            ? 'Pick a preset, or switch to Custom Build to fine-tune every component.'
+            ? 'These configurations are fixed. To change any component, switch to Customize.'
             : 'Select components to build your ideal ' + product.name + '.'}
         </p>
       </div>
 
-      {/* Quick pick tiers */}
+      {/* Fixed tiers — details only, no per-component selection */}
       {mode === 'quick' && (
-        <div className="grid gap-3 sm:grid-cols-3">
-          {sortedTiers.map((t) => {
+        <div className="grid gap-3 xs:grid-cols-2 xl:grid-cols-3">
+          {tierDetails.map(({ tier: t, specs, price }) => {
             const selected = activeTierId === t.id;
             return (
               <button
@@ -178,27 +179,55 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
                 type="button"
                 onClick={() => setActiveTierId(t.id)}
                 className={cn(
-                  'flex flex-col items-start rounded-2xl border p-5 text-left transition',
+                  'flex min-w-0 flex-col items-start rounded-2xl border p-4 text-left transition sm:p-5',
                   selected
                     ? 'border-brand bg-brand-50 ring-2 ring-brand/30 dark:bg-brand/10'
                     : 'border-gray-200 bg-white hover:border-brand-300 dark:border-gray-800 dark:bg-gray-900'
                 )}
               >
-                <span className={cn('text-xs font-bold uppercase tracking-wider', selected ? 'text-brand' : 'text-ink-muted dark:text-gray-400')}>
-                  {t.name}
+                <span className="flex w-full items-start justify-between gap-2">
+                  <span className={cn('text-xs font-bold uppercase tracking-wider', selected ? 'text-brand' : 'text-ink-muted dark:text-gray-400')}>
+                    {t.name}
+                  </span>
+                  {selected && <Check className="h-5 w-5 flex-shrink-0 text-brand" />}
                 </span>
                 <span className="mt-1 font-display text-lg font-bold">{t.label}</span>
+                <span className="mt-1 text-base font-extrabold">{formatINR(price)}</span>
                 {t.description && <span className="mt-2 text-xs text-ink-muted dark:text-gray-400">{t.description}</span>}
-                {selected && <Check className="mt-3 h-5 w-5 text-brand" />}
+
+                {specs.length > 0 && (
+                  <span className="mt-4 block w-full space-y-1.5 border-t border-gray-200 pt-3 dark:border-gray-700">
+                    {specs.map((s) => (
+                      <span key={s.groupLabel} className="flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
+                        <span className="flex-shrink-0 text-ink-muted dark:text-gray-400">{s.groupLabel}</span>
+                        <span className="min-w-0 font-medium sm:text-right">{s.valueLabel}</span>
+                      </span>
+                    ))}
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
       )}
 
-      {/* Option groups - shown in both modes */}
-      {groups.map((g) => {
-        const selectedId = activeSelections[g.id];
+      {mode === 'quick' && (
+        <p className="text-center text-sm text-ink-muted dark:text-gray-400">
+          Need a different spec?{' '}
+          <button
+            type="button"
+            onClick={() => setMode('custom')}
+            className="font-semibold text-brand hover:underline"
+          >
+            Switch to Customize
+          </button>{' '}
+          to build your own.
+        </p>
+      )}
+
+      {/* Option groups — customisation only */}
+      {mode === 'custom' && groups.map((g) => {
+        const selectedId = customSelections[g.id];
         return (
           <div key={g.id} className="card p-4 sm:p-5">
             <div className="mb-3 flex items-baseline justify-between">
@@ -206,29 +235,25 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
                 {g.label}
                 {g.required && <span className="ml-1 text-brand">*</span>}
               </label>
-              {mode === 'quick' && <span className="text-xs text-ink-muted dark:text-gray-400">Tier default · Tap to override</span>}
             </div>
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 xs:grid-cols-2 2xl:grid-cols-3">
               {g.values.map((v) => {
                 const selected = selectedId === v.id;
                 return (
                   <button
                     key={v.id}
                     type="button"
-                    onClick={() => {
-                      if (mode === 'quick') setQuickSelections((prev) => ({ ...prev, [g.id]: v.id }));
-                      else setCustomSelections((prev) => ({ ...prev, [g.id]: v.id }));
-                    }}
+                    onClick={() => setCustomSelections((prev) => ({ ...prev, [g.id]: v.id }))}
                     className={cn(
-                      'flex items-center justify-between gap-2 rounded-xl border p-3 text-left text-sm transition',
+                      'flex min-w-0 items-center justify-between gap-2 rounded-xl border p-3 text-left text-sm transition',
                       selected
                         ? 'border-brand bg-brand-50 ring-2 ring-brand/30 dark:bg-brand/10'
                         : 'border-gray-200 bg-white hover:border-brand-300 dark:border-gray-800 dark:bg-gray-900'
                     )}
                   >
-                    <span className="flex items-center gap-2">
+                    <span className="flex min-w-0 items-center gap-2">
                       {selected && <Check className="h-4 w-4 flex-shrink-0 text-brand" />}
-                      <span className="font-medium">{v.label}</span>
+                      <span className="min-w-0 font-medium">{v.label}</span>
                     </span>
                     <span className={cn('flex-shrink-0 text-xs font-semibold', v.priceDelta === 0 ? 'text-ink-muted dark:text-gray-400' : 'text-brand-700 dark:text-brand-400')}>
                       {v.priceDelta === 0 ? 'Included' : `+${formatINR(v.priceDelta)}`}
@@ -248,16 +273,16 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
             <p className="text-xs uppercase tracking-wider text-ink-muted dark:text-gray-400">Total</p>
             <p className="text-2xl font-extrabold sm:text-3xl">{formatINR(totalPrice)}</p>
           </div>
-          <div className="flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 dark:border-gray-700">
+          <div className="flex flex-shrink-0 items-center gap-1 rounded-full border border-gray-200 px-1 dark:border-gray-700">
             <button
               onClick={() => setQty((q) => Math.max(1, q - 1))}
-              className="text-lg text-ink-muted hover:text-brand dark:text-gray-400"
+              className="flex h-10 w-10 items-center justify-center text-lg text-ink-muted hover:text-brand dark:text-gray-400"
               aria-label="Decrease quantity"
             >−</button>
             <span className="min-w-[2ch] text-center font-bold">{qty}</span>
             <button
               onClick={() => setQty((q) => q + 1)}
-              className="text-lg text-ink-muted hover:text-brand dark:text-gray-400"
+              className="flex h-10 w-10 items-center justify-center text-lg text-ink-muted hover:text-brand dark:text-gray-400"
               aria-label="Increase quantity"
             >+</button>
           </div>

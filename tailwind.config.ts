@@ -5,6 +5,12 @@ const config: Config = {
   darkMode: 'class',
   theme: {
     extend: {
+      screens: {
+        // Small phones (iPhone SE / Galaxy S-mini are 320–375px) get the base styles;
+        // `xs` is the first step up, `3xl` targets wide desktop and ultrawide monitors.
+        xs: '475px',
+        '3xl': '1920px',
+      },
       colors: {
         brand: {
   DEFAULT: '#7C3AED',

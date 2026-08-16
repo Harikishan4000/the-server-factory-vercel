@@ -19,8 +19,8 @@ export default async function CheckoutPage() {
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 lg:px-8 md:py-10">
-      <h1 className="font-display text-3xl font-extrabold md:text-4xl">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 md:py-10">
+      <h1 className="heading-page font-display font-extrabold">
         Secure <span className="text-brand">Checkout</span>
       </h1>
       <p className="mt-2 text-sm text-ink-muted dark:text-gray-400 md:text-base">Review your order and confirm billing details.</p>
