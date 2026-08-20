@@ -19,7 +19,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
   const slide = slides[i];
 
   return (
-    <section className="relative h-[clamp(24rem,70vh,40rem)] overflow-hidden">
+    <section className="relative h-[clamp(20rem,66vh,38rem)] overflow-hidden">
       {slides.map((s, idx) => (
         <div
           key={idx}

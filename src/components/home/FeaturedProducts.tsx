@@ -14,7 +14,7 @@ export async function FeaturedProducts({ heading, limit = 8 }: { heading?: strin
   if (!products.length) return null;
 
   return (
-    <section className="container-page py-10 sm:py-12 md:py-16">
+    <section className="container-page section-y">
       <div className="mb-6 flex items-end justify-between sm:mb-8 md:mb-10">
         <h2 className="heading-section font-display font-bold">
           {heading ?? 'Featured '}<span className="text-brand">Hardware</span>

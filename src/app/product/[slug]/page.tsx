@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { formatINR } from '@/lib/utils';
 import { getCategoryTree, getBreadcrumb } from '@/lib/categories';
+import { getConfiguratorSettings } from '@/lib/site-settings';
 import { Configurator } from '@/components/product/Configurator';
 import { CategoryBreadcrumb } from '@/components/layout/CategoryBreadcrumb';
 
@@ -51,7 +52,10 @@ export default async function ProductPage({ params }: Props) {
   if (!product || !product.isActive) notFound();
 
   // Full category trail (Servers → Rack Servers → 1U) so each crumb can offer its own flyout
-  const tree = await getCategoryTree();
+  const [tree, configurator] = await Promise.all([
+    getCategoryTree(),
+    getConfiguratorSettings(),
+  ]);
   const trail = getBreadcrumb(tree, product.category.slug);
   const categoryCrumbs = trail.length > 0
     ? trail.map((crumb) => ({
@@ -133,6 +137,7 @@ export default async function ProductPage({ params }: Props) {
 
             <div className="mt-6 md:mt-8">
               <Configurator
+                hideSpecLabels={configurator.hideSpecLabels}
                 product={{
                   id: product.id,
                   slug: product.slug,

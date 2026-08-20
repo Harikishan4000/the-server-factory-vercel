@@ -16,7 +16,7 @@ export async function CategoryGrid({ heading }: { heading?: string }) {
   if (!cats.length) return null;
 
   return (
-    <section className="container-page py-10 sm:py-12 md:py-16">
+    <section className="container-page section-y">
       <h2 className="heading-section mb-6 font-display font-bold sm:mb-8 md:mb-10">
         {heading ?? 'Shop by Category'}
       </h2>

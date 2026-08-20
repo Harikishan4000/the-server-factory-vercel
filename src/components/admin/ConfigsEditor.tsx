@@ -1,0 +1,138 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Check, Save } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { ConfiguratorSettings } from '@/lib/site-settings';
+
+export function ConfigsEditor({ initial }: { initial: ConfiguratorSettings }) {
+  const router = useRouter();
+  const [settings, setSettings] = useState<ConfiguratorSettings>(initial);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const dirty = settings.hideSpecLabels !== initial.hideSpecLabels;
+
+  async function save() {
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ configurator: settings }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error ?? 'Save failed');
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="mt-6 max-w-3xl space-y-6 md:mt-8">
+      <section className="card p-4 sm:p-6">
+        <h2 className="font-display text-lg font-bold">Product configurator</h2>
+        <p className="mt-1 text-sm text-ink-muted dark:text-gray-400">
+          Controls how the &ldquo;Choose a configuration&rdquo; section renders on every product page.
+        </p>
+
+        <Toggle
+          className="mt-5"
+          label="Hide spec labels"
+          description={
+            'Show each spec as just its value. Turn this off to show the component name alongside it.'
+          }
+          checked={settings.hideSpecLabels}
+          onChange={(hideSpecLabels) => setSettings({ ...settings, hideSpecLabels })}
+        />
+
+        <div className="mt-5 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+          <p className="text-xs font-semibold uppercase tracking-wider text-ink-muted dark:text-gray-400">
+            Preview
+          </p>
+          <div className="mt-3 space-y-1.5">
+            {SAMPLE_SPECS.map((s) =>
+              settings.hideSpecLabels ? (
+                <p key={s.label} className="text-xs font-medium">{s.value}</p>
+              ) : (
+                <p key={s.label} className="flex items-baseline justify-between gap-2 text-xs">
+                  <span className="text-ink-muted dark:text-gray-400">{s.label}</span>
+                  <span className="text-right font-medium">{s.value}</span>
+                </p>
+              )
+            )}
+          </div>
+        </div>
+      </section>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+      )}
+
+      <div className="flex items-center gap-3">
+        <button onClick={save} disabled={saving || !dirty} className="btn-brand disabled:opacity-50">
+          <Save className="h-4 w-4" />
+          {saving ? 'Saving...' : 'Save changes'}
+        </button>
+        {saved && (
+          <span className="flex items-center gap-1.5 text-sm font-semibold text-green-600">
+            <Check className="h-4 w-4" /> Saved
+          </span>
+        )}
+        {dirty && !saving && !saved && (
+          <span className="text-sm text-ink-muted dark:text-gray-400">Unsaved changes</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const SAMPLE_SPECS = [
+  { label: 'Processor', value: '2x Intel Xeon Gold 6248' },
+  { label: 'RAM', value: '256GB DDR4 ECC RDIMM' },
+  { label: 'Storage', value: '4x 3.2TB NVMe U.2 SSD' },
+];
+
+function Toggle({
+  label, description, checked, onChange, className,
+}: {
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn('flex items-start justify-between gap-4', className)}>
+      <div className="min-w-0">
+        <p className="font-semibold">{label}</p>
+        <p className="mt-0.5 text-sm text-ink-muted dark:text-gray-400">{description}</p>
+      </div>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className={cn(
+          'relative mt-1 h-6 w-11 flex-shrink-0 rounded-full transition-colors',
+          checked ? 'bg-brand' : 'bg-gray-300 dark:bg-gray-600'
+        )}
+      >
+        <span
+          className={cn(
+            'absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform',
+            checked ? 'translate-x-[22px]' : 'translate-x-0.5'
+          )}
+        />
+      </button>
+    </div>
+  );
+}
