@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import {
   LayoutDashboard, Package, Tag, ShoppingBag, Users, LayoutPanelLeft,
-  LogOut, ExternalLink, Menu, X,
+  SlidersHorizontal, LogOut, ExternalLink, Menu, X,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ const NAV_ITEMS = [
   { href: '/admin/orders', label: 'Orders', icon: ShoppingBag },
   { href: '/admin/users', label: 'Users', icon: Users },
   { href: '/admin/landing', label: 'Landing Page', icon: LayoutPanelLeft },
+  { href: '/admin/configs', label: 'Configs', icon: SlidersHorizontal },
 ];
 
 export function AdminShell({ user, children }: { user: { email: string; name: string | null }; children: React.ReactNode }) {

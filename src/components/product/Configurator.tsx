@@ -22,7 +22,18 @@ type Mode = 'quick' | 'custom';
 
 const TIER_ORDER = ['BASIC', 'INTERMEDIATE', 'ADVANCED'] as const;
 
-export function Configurator({ product, groups, tiers }: { product: Product; groups: OptionGroup[]; tiers: Tier[] }) {
+export function Configurator({
+  product,
+  groups,
+  tiers,
+  hideSpecLabels = false,
+}: {
+  product: Product;
+  groups: OptionGroup[];
+  tiers: Tier[];
+  /** Admin → Configs: render tier specs as bare values, without the component name. */
+  hideSpecLabels?: boolean;
+}) {
   const router = useRouter();
   const { add } = useCart();
 
@@ -197,12 +208,18 @@ export function Configurator({ product, groups, tiers }: { product: Product; gro
 
                 {specs.length > 0 && (
                   <span className="mt-4 block w-full space-y-1.5 border-t border-gray-200 pt-3 dark:border-gray-700">
-                    {specs.map((s) => (
-                      <span key={s.groupLabel} className="flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
-                        <span className="flex-shrink-0 text-ink-muted dark:text-gray-400">{s.groupLabel}</span>
-                        <span className="min-w-0 font-medium sm:text-right">{s.valueLabel}</span>
-                      </span>
-                    ))}
+                    {specs.map((s) =>
+                      hideSpecLabels ? (
+                        <span key={s.groupLabel} className="block text-xs font-medium">
+                          {s.valueLabel}
+                        </span>
+                      ) : (
+                        <span key={s.groupLabel} className="flex flex-wrap items-baseline justify-between gap-x-2 text-xs">
+                          <span className="flex-shrink-0 text-ink-muted dark:text-gray-400">{s.groupLabel}</span>
+                          <span className="min-w-0 font-medium sm:text-right">{s.valueLabel}</span>
+                        </span>
+                      )
+                    )}
                   </span>
                 )}
               </button>

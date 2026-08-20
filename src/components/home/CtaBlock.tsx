@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export function CtaBlock({ heading, subheading, ctaText, ctaLink }: { heading?: string; subheading?: string; ctaText?: string; ctaLink?: string }) {
   return (
-    <section className="container-page py-10 sm:py-12 md:py-16">
+    <section className="container-page section-y">
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 to-brand-400 px-5 py-10 text-center text-white shadow-brand sm:rounded-3xl sm:px-8 sm:py-12 md:px-16 md:py-16">
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 20%, white 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
         <div className="relative">
